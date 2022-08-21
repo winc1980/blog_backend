@@ -13,3 +13,4 @@
 ```
 docker-compose up
 ```
+サーバーが起動した状態で[APIドキュメント](http://localhost:8000/docs#/)にアクセスすることでAPIの挙動を確認できます。
