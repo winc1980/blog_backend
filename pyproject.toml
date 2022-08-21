@@ -8,6 +8,9 @@ authors = ["add-bakkers <add.re.0828@gmail.com>"]
 python = "^3.10"
 uvicorn = "^0.18.2"
 fastapi = "^0.79.1"
+SQLAlchemy = "^1.4.40"
+aiomysql = "^0.1.1"
+cryptography = "^37.0.4"
 
 [tool.poetry.dev-dependencies]
 fastapi = "^0.79.1"
