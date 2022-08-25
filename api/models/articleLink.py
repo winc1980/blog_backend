@@ -9,6 +9,6 @@ class ArticleLink(Base):
     __tablename__ = "articleLink"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user = Column(Integer, ForeignKey('user.id'))
     link = Column(String(256))
     published_at = Column(DateTime, default=datetime.now(), nullable=False)

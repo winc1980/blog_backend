@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class ArticleLinkBase(BaseModel):
-    user_id: int = Field(None, description="user")
+    user: int = Field(None, description="user")
     link: Optional[str] = Field(None, example="sample title")
     published_at: Optional[datetime] = Field(None)
 
