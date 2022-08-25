@@ -23,7 +23,8 @@ async def get_users(db: AsyncSession) -> List[Tuple[int, str, bool]]:
         db.execute(
             select(
                 user_model.User.id,
-                user_model.User.name
+                user_model.User.name,
+                user_model.User.zenn_id
             )
         )
     )

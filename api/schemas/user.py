@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 class UserBase(BaseModel):
     name: Optional[str] = Field(None, example="sample user")
+    zenn_id: Optional[str] = Field(None, example="zenn")
 
 
 class UserCreate(UserBase):
