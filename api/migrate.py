@@ -4,6 +4,8 @@ from api.models.user import Base as user_base
 
 from api.models.article import Base as article_base
 
+from api.models.articleLink import Base as articleLink_base
+
 DB_URL = "mysql+pymysql://root:root@db:3306/winc_blog?charset=utf8"
 engine = create_engine(DB_URL, echo=True)
 
@@ -13,6 +15,8 @@ def reset_database():
     user_base.metadata.create_all(bind=engine)
     article_base.metadata.drop_all(bind=engine)
     article_base.metadata.create_all(bind=engine)
+    articleLink_base.metadata.drop_all(bind=engine)
+    articleLink_base.metadata.create_all(bind=engine)
 
 
 if __name__ == "__main__":
