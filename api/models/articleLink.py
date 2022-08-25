@@ -10,5 +10,6 @@ class ArticleLink(Base):
 
     id = Column(Integer, primary_key=True)
     user = Column(Integer, ForeignKey('user.id'))
+    title = Column(String(128))
     link = Column(String(256))
     published_at = Column(DateTime, default=datetime.now(), nullable=False)

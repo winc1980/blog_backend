@@ -24,8 +24,10 @@ async def get_articleLinks(db: AsyncSession) -> List[Tuple[int, str, bool]]:
         db.execute(
             select(
                 articleLink_model.ArticleLink.id,
+                articleLink_model.ArticleLink.title,
+                articleLink_model.ArticleLink.user,
                 articleLink_model.ArticleLink.link,
-                articleLink_model.ArticleLink.user
+                articleLink_model.ArticleLink.published_at
             )
         )
     )
