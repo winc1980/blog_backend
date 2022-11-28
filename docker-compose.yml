@@ -6,7 +6,7 @@ services:
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/winc_blog
     ports:
-      - "8080:8080"
+      - "8888:8888"
     networks:
       - backend
   mongodb:
@@ -20,7 +20,7 @@ services:
       MONGO_INITDB_DATABASE: "winc_blog"
       TZ: Asia/Tokyo
     ports:
-      - "27000:27017"
+      - "27077:27017"
     networks:
       - backend
 networks:
