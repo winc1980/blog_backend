@@ -7,4 +7,5 @@ func (s *Server) HandleUsers(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		return
 	}
+	respondErr(w, r, http.StatusNotFound)
 }
