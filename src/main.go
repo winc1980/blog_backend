@@ -31,8 +31,9 @@ func main() {
 	s := &Server{client}
 	log.Println("start server")
 	mux := http.NewServeMux()
-	mux.HandleFunc("/events/", withCORS(s.HandleLinks))
-	http.ListenAndServe(":8080", mux)
+	mux.HandleFunc("/links/", withCORS(s.HandleLinks))
+	mux.HandleFunc("/feeds/", withCORS(s.HandleLinks))
+	http.ListenAndServe(":8888", mux)
 }
 
 type Server struct {
