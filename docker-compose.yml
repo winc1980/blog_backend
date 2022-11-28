@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  server:
+    build: .
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/winc_blog
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+  mongodb:
+    # https://hub.docker.com/_/mongo
+    image: mongo:4
+    volumes:
+      - ./volumes/mongo/db:/data/db
+      - ./volumes/mongo/configdb:/data/configdb
+      - ./volumes/mongo/init:/docker-entrypoint-initdb.d
+    environment:
+      MONGO_INITDB_DATABASE: "winc_blog"
+      TZ: Asia/Tokyo
+    ports:
+      - "27000:27017"
+    networks:
+      - backend
+networks:
+  backend:
+    name: "winc_blog-network"
