@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
+        "winc",
         "zenn"
-    ]
+    ],
+    "python.linting.pep8Enabled": true
 }
