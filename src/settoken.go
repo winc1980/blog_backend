@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"golang.org/x/oauth2"
@@ -25,7 +24,6 @@ func (s *Server) HandleSetToken(w http.ResponseWriter, r *http.Request) {
 func (s *Server) HandleSetTokenPost(w http.ResponseWriter, r *http.Request) {
 	var token Token
 	decodeBody(r, &token)
-	log.Println(token)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "auth",
 		Value:    token.Token,
@@ -52,5 +50,6 @@ func (s *Server) HandleSetTokenPost(w http.ResponseWriter, r *http.Request) {
 		respondErr(w, r, http.StatusInternalServerError)
 		return
 	}
+
 	respond(w, r, http.StatusOK, "")
 }

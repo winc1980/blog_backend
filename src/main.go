@@ -39,6 +39,7 @@ func main() {
 	mux.HandleFunc("/articles/", withCORS(s.HandleArticles))
 	mux.HandleFunc("/members/", withCORS(s.HandleMembers))
 	mux.HandleFunc("/settoken/", withCORS(s.HandleSetToken))
+	mux.HandleFunc("/github_team/", withCORS(s.HandleGithubTeam))
 	http.ListenAndServe(":8888", mux)
 }
 
@@ -128,6 +129,7 @@ func (s *Server) GetCurrentUser(w http.ResponseWriter, r *http.Request) (string,
 	}
 	var user GithubUser
 	err = json.Unmarshal(body, &user)
+	log.Println("user:", user)
 	if err != nil {
 		respondErr(w, r, http.StatusInternalServerError)
 		return "", err
