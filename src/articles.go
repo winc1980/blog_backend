@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -49,4 +50,19 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respond(w, r, http.StatusOK, results)
+}
+
+func (s *Server) findArticleByLink(link string) (Article, error) {
+	db := s.client.Database("winc")
+	collection := db.Collection("articles")
+	var result bson.Raw
+	err := collection.FindOne(context.TODO(), bson.D{{Key: "link", Value: link}}).Decode(&result)
+	if err != nil {
+		return Article{}, err
+	}
+	var mapData map[string]interface{}
+	json.Unmarshal([]byte(result.String()), &mapData)
+	var article Article
+	json.Unmarshal([]byte(result.String()), &article)
+	return article, nil
 }

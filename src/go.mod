@@ -7,7 +7,6 @@ require (
 	github.com/mmcdole/gofeed v1.1.3
 	go.mongodb.org/mongo-driver v1.11.0
 	golang.org/x/oauth2 v0.2.0
-	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
 
 require (

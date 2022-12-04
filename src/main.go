@@ -37,7 +37,8 @@ func main() {
 	log.Println("start server")
 	mux := http.NewServeMux()
 	mux.HandleFunc("/articles/", withCORS(s.HandleArticles))
-	mux.HandleFunc("/feeds/", withCORS(s.HandleFeeds))
+	mux.HandleFunc("/members/", withCORS(s.HandleMembers))
+	mux.HandleFunc("/settoken/", withCORS(s.HandleSetToken))
 	http.ListenAndServe(":8888", mux)
 }
 

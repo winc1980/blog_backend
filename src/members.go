@@ -11,15 +11,16 @@ import (
 )
 
 type Member struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Zenn string `json:"zenn"`
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Zenn  string `json:"zenn"`
+	Qiita string `json:"qiita"`
 }
 
-func (s *Server) HandleMember(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleMembers(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
-		s.HandleMemberPost(w, r)
+		s.HandleMembersPost(w, r)
 		return
 	case "PUT":
 		return
@@ -27,7 +28,7 @@ func (s *Server) HandleMember(w http.ResponseWriter, r *http.Request) {
 	respondErr(w, r, http.StatusNotFound)
 }
 
-func (s *Server) HandleMemberPost(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleMembersPost(w http.ResponseWriter, r *http.Request) {
 	var member Member
 	err := decodeBody(r, &member)
 	if err != nil {
@@ -58,7 +59,7 @@ func (s *Server) HandleMemberPost(w http.ResponseWriter, r *http.Request) {
 	respond(w, r, http.StatusOK, "")
 }
 
-func (s *Server) HandleMemberPut(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleMembersPut(w http.ResponseWriter, r *http.Request) {
 	var member Member
 	err := decodeBody(r, &member)
 	if err != nil {
