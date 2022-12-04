@@ -68,7 +68,7 @@ var (
 	oauthConfig = &oauth2.Config{
 		ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
 		ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
-		RedirectURL:  "http://localhost:8080/oauth/callback",
+		RedirectURL:  "https://blog.winc.ne.jp/oauth/callback",
 		Scopes:       []string{"user"},
 		Endpoint:     github.Endpoint,
 	}
