@@ -59,7 +59,7 @@ func withCORS(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-type User struct {
+type GithubUser struct {
 	Login string `json:"login"`
 	ID    int    `json:"id"`
 }
@@ -95,7 +95,7 @@ func NeedToken(fn http.HandlerFunc) http.HandlerFunc {
 			respondErr(w, r, http.StatusInternalServerError)
 			return
 		}
-		var user User
+		var user GithubUser
 		err = json.Unmarshal(body, &user)
 		if err != nil {
 			respondErr(w, r, http.StatusInternalServerError)
@@ -125,7 +125,7 @@ func (s *Server) GetCurrentUser(w http.ResponseWriter, r *http.Request) (string,
 		respondErr(w, r, http.StatusInternalServerError)
 		return "", err
 	}
-	var user User
+	var user GithubUser
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		respondErr(w, r, http.StatusInternalServerError)
