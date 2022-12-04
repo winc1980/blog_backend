@@ -3,10 +3,23 @@ package main
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+type Article struct {
+	Name      string `json:"name"`
+	Link      string `json:"link"`
+	Title     string
+	Published time.Time
+}
+
+type Articles struct {
+	ID   string    `json:"id"`
+	List []Article `json:"list"`
+}
 
 func (s *Server) HandleArticles(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {

@@ -4,18 +4,10 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/mmcdole/gofeed"
 	"go.mongodb.org/mongo-driver/bson"
 )
-
-type Article struct {
-	Name      string `json:"name"`
-	Link      string `json:"link"`
-	Title     string
-	Published time.Time
-}
 
 func (s *Server) HandleFeeds(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
