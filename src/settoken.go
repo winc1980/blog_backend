@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/oauth2"
 )
 
@@ -48,6 +49,17 @@ func (s *Server) HandleSetTokenPost(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		respondErr(w, r, http.StatusInternalServerError)
+		return
+	}
+	db := s.client.Database("winc")
+	collection := db.Collection("github_team_members")
+	count, err := collection.CountDocuments(context.TODO(), bson.D{{Key: "id", Value: user.Login}})
+	if err != nil {
+		respondErr(w, r, http.StatusInternalServerError)
+		return
+	}
+	if count == 0 {
+		respondErr(w, r, http.StatusBadRequest, "")
 		return
 	}
 
