@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -34,6 +35,15 @@ func main() {
 		}
 	}()
 	s := &Server{client}
+	go func() {
+		t := time.NewTicker(5 * time.Minute)
+		for {
+			<-t.C
+			log.Println("start collect")
+			s.WINCMembers()
+			s.FeedCollector()
+		}
+	}()
 	log.Println("start server")
 	mux := http.NewServeMux()
 	mux.HandleFunc("/articles/", withCORS(s.HandleArticles))
