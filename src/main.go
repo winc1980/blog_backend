@@ -48,7 +48,7 @@ func main() {
 	}()
 	log.Println("start server")
 	mux := http.NewServeMux()
-	mux.HandleFunc("create_article", withCORS(NeedToken(s.HandleCreateArticle)))
+	mux.HandleFunc("/create_article/", withCORS(NeedToken(s.HandleCreateArticle)))
 	mux.HandleFunc("/articles/", withCORS(s.HandleArticles))
 	mux.HandleFunc("/members/", withCORS(NeedToken(s.HandleMembers)))
 	mux.HandleFunc("/members_list/", withCORS(s.HandleMembersList))
@@ -69,6 +69,7 @@ func withCORS(fn http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
 		switch r.Method {
 		case "OPTIONS":
+			log.Println("preflight")
 			return
 		}
 		fn(w, r)

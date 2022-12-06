@@ -72,22 +72,38 @@ func (s *Server) HandleMembersPut(w http.ResponseWriter, r *http.Request) {
 	}
 	db := s.client.Database("winc")
 	collection := db.Collection("members")
+	filter := bson.D{{Key: "id", Value: githubid}}
 	if member.Name != "" {
-		_, err = collection.UpdateOne(context.TODO(), bson.D{{Key: "id", Value: githubid}}, bson.D{{"$set", bson.D{{Key: "name", Value: member.Name}}}})
+		update := bson.D{{"$set", bson.D{{Key: "name", Value: member.Name}}}}
+		_, err = collection.UpdateOne(
+			context.TODO(),
+			filter,
+			update,
+		)
 		if err != nil {
 			respondErr(w, r, http.StatusInternalServerError)
 			return
 		}
 	}
 	if member.Zenn != "" {
-		_, err = collection.UpdateOne(context.TODO(), bson.D{{Key: "id", Value: githubid}}, bson.D{{"$set", bson.D{{Key: "zenn", Value: member.Zenn}}}})
+		update := bson.D{{"$set", bson.D{{Key: "zenn", Value: member.Zenn}}}}
+		_, err = collection.UpdateOne(
+			context.TODO(),
+			filter,
+			update,
+		)
 		if err != nil {
 			respondErr(w, r, http.StatusInternalServerError)
 			return
 		}
 	}
 	if member.Qiita != "" {
-		_, err = collection.UpdateOne(context.TODO(), bson.D{{Key: "id", Value: githubid}}, bson.D{{"$set", bson.D{{Key: "qiita", Value: member.Qiita}}}})
+		update := bson.D{{"$set", bson.D{{Key: "qiita", Value: member.Qiita}}}}
+		_, err = collection.UpdateOne(
+			context.TODO(),
+			filter,
+			update,
+		)
 		if err != nil {
 			respondErr(w, r, http.StatusInternalServerError)
 			return
