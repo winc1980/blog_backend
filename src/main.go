@@ -36,7 +36,7 @@ func main() {
 	}()
 	s := &Server{client}
 	go func() {
-		t := time.NewTicker(5 * time.Minute)
+		t := time.NewTicker(15 * time.Second)
 		for {
 			<-t.C
 			log.Println("start collect")
@@ -46,8 +46,9 @@ func main() {
 	}()
 	log.Println("start server")
 	mux := http.NewServeMux()
+	mux.HandleFunc("create_article", withCORS(NeedToken(s.HandleCreateArticle)))
 	mux.HandleFunc("/articles/", withCORS(s.HandleArticles))
-	mux.HandleFunc("/members/", withCORS(s.HandleMembers))
+	mux.HandleFunc("/members/", withCORS(NeedToken(s.HandleMembers)))
 	mux.HandleFunc("/settoken/", withCORS(s.HandleSetToken))
 	mux.HandleFunc("/github_team/", withCORS(s.HandleGithubTeam))
 	http.ListenAndServe(":8888", mux)
