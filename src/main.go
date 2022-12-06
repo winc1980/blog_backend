@@ -36,6 +36,8 @@ func main() {
 	}()
 	s := &Server{client}
 	go func() {
+		s.WINCMembers()
+		s.FeedCollector()
 		t := time.NewTicker(15 * time.Minute)
 		for {
 			<-t.C
@@ -49,6 +51,7 @@ func main() {
 	mux.HandleFunc("create_article", withCORS(NeedToken(s.HandleCreateArticle)))
 	mux.HandleFunc("/articles/", withCORS(s.HandleArticles))
 	mux.HandleFunc("/members/", withCORS(NeedToken(s.HandleMembers)))
+	mux.HandleFunc("/members_list/", withCORS(s.HandleMembersList))
 	mux.HandleFunc("/settoken/", withCORS(s.HandleSetToken))
 	mux.HandleFunc("/github_team/", withCORS(s.HandleGithubTeam))
 	http.ListenAndServe(":8888", mux)

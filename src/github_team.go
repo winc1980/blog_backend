@@ -83,7 +83,4 @@ func (s *Server) WINCMembers() {
 		}
 		pagecnt++
 	}
-
-	count, _ := collection.CountDocuments(context.TODO(), bson.D{})
-	log.Println(count)
 }
