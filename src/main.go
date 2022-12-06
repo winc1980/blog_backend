@@ -93,12 +93,9 @@ var (
 
 func NeedToken(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("OAuthToken")
-		if err != nil {
-			respondErr(w, r, http.StatusBadRequest, "OAuthToken cookie not found")
-			return
-		}
-		token := &oauth2.Token{AccessToken: cookie.Value}
+		var oauthtoken Token
+		decodeBody(r, &oauthtoken)
+		token := &oauth2.Token{AccessToken: oauthtoken.Token}
 		client := oauthConfig.Client(context.Background(), token)
 		resp, err := client.Get("https://api.github.com/user")
 		if err != nil {
@@ -122,13 +119,9 @@ func NeedToken(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 func (s *Server) GetCurrentUser(w http.ResponseWriter, r *http.Request) (string, error) {
-	cookie, err := r.Cookie("OAuthToken")
-	if err != nil {
-		respondErr(w, r, http.StatusBadRequest, "OAuthToken cookie not found")
-		return "", err
-	}
-
-	token := &oauth2.Token{AccessToken: cookie.Value}
+	var oauthtoken Token
+	decodeBody(r, &oauthtoken)
+	token := &oauth2.Token{AccessToken: oauthtoken.Token}
 	client := oauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://api.github.com/user")
 	if err != nil {
