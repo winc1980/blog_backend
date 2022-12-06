@@ -67,7 +67,6 @@ func (s *Server) HandleMembersPut(w http.ResponseWriter, r *http.Request) {
 	}
 	githubid, err := s.GetCurrentUser(w, r)
 	if err != nil {
-		respondErr(w, r, http.StatusBadRequest, "", err)
 		return
 	}
 	db := s.client.Database("winc")

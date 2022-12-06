@@ -22,12 +22,13 @@ func (s *Server) HandleSetToken(w http.ResponseWriter, r *http.Request) {
 		s.HandleSetTokenPost(w, r)
 		return
 	}
+	respondErr(w, r, http.StatusNotFound)
 }
 func (s *Server) HandleSetTokenPost(w http.ResponseWriter, r *http.Request) {
 	var token Token
 	decodeBody(r, &token)
 	http.SetCookie(w, &http.Cookie{
-		Name:     "auth",
+		Name:     "OAuthToken",
 		Value:    token.Token,
 		Secure:   true,
 		HttpOnly: true,

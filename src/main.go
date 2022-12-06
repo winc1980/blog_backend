@@ -64,7 +64,7 @@ type Server struct {
 func withCORS(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Origin", "https://blog.winc.ne.jp/")
 		w.Header().Set("Access-Control-Allow-Headers", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
 		switch r.Method {
@@ -98,7 +98,6 @@ func NeedToken(fn http.HandlerFunc) http.HandlerFunc {
 			respondErr(w, r, http.StatusBadRequest, "OAuthToken cookie not found")
 			return
 		}
-
 		token := &oauth2.Token{AccessToken: cookie.Value}
 		client := oauthConfig.Client(context.Background(), token)
 		resp, err := client.Get("https://api.github.com/user")
