@@ -112,18 +112,19 @@ func (s *Server) QiitaLinkCollector(qiitaID string, githubID string) {
 	collection := db.Collection("articles")
 	for _, item := range response {
 		_, err := s.findArticleByLink(item.Link)
-		if err != mongo.ErrNoDocuments && err != nil {
-			return
-		}
-		_, err = collection.InsertOne(ctx, bson.D{
-			{Key: "type", Value: "qiita"},
-			{Key: "id", Value: githubID},
-			{Key: "name", Value: qiitaID},
-			{Key: "link", Value: item.Link},
-			{Key: "title", Value: item.Title},
-			{Key: "published", Value: item.Created_at},
-		})
-		if err != nil {
+		if err == mongo.ErrNoDocuments {
+			_, err = collection.InsertOne(ctx, bson.D{
+				{Key: "type", Value: "qiita"},
+				{Key: "id", Value: githubID},
+				{Key: "name", Value: qiitaID},
+				{Key: "link", Value: item.Link},
+				{Key: "title", Value: item.Title},
+				{Key: "published", Value: item.Created_at},
+			})
+			if err != nil {
+				return
+			}
+		} else if err != nil {
 			return
 		}
 	}

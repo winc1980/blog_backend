@@ -67,8 +67,11 @@ func (s *Server) HandleMembersPost(w http.ResponseWriter, r *http.Request) {
 	}
 	memberCollection := db.Collection("members")
 	_, err = s.findMemberByID(user.Login)
-	if err != mongo.ErrNoDocuments && err != nil {
+	if err != mongo.ErrNoDocuments {
 		respondErr(w, r, http.StatusBadRequest, "member already exists")
+		return
+	} else if err != nil {
+		respondErr(w, r, http.StatusInternalServerError)
 		return
 	}
 	_, err = memberCollection.InsertOne(context.TODO(), bson.D{{Key: "id", Value: user.Login}})
