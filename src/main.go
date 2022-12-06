@@ -36,7 +36,7 @@ func main() {
 	}()
 	s := &Server{client}
 	go func() {
-		t := time.NewTicker(15 * time.Second)
+		t := time.NewTicker(15 * time.Minute)
 		for {
 			<-t.C
 			log.Println("start collect")
