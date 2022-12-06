@@ -14,6 +14,7 @@ func (s *Server) HandleMembersList(w http.ResponseWriter, r *http.Request) {
 		s.handleMembersListGet(w, r)
 		return
 	}
+	respondErr(w, r, http.StatusNotFound)
 }
 
 func (s *Server) handleMembersListGet(w http.ResponseWriter, r *http.Request) {

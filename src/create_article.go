@@ -19,6 +19,7 @@ func (s *Server) HandleCreateArticle(w http.ResponseWriter, r *http.Request) {
 		s.HandleCreateArticlePost(w, r)
 		return
 	}
+	respondErr(w, r, http.StatusNotFound)
 }
 
 func (s *Server) HandleCreateArticlePost(w http.ResponseWriter, r *http.Request) {

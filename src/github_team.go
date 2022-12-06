@@ -23,6 +23,7 @@ func (s *Server) HandleGithubTeam(w http.ResponseWriter, r *http.Request) {
 		s.handleGithubTeamGet(w, r)
 		return
 	}
+	respondErr(w, r, http.StatusNotFound)
 }
 
 func (s *Server) handleGithubTeamGet(w http.ResponseWriter, r *http.Request) {
