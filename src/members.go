@@ -70,28 +70,24 @@ func (s *Server) HandleMembersPut(w http.ResponseWriter, r *http.Request) {
 		respondErr(w, r, http.StatusBadRequest, "", err)
 		return
 	}
-	if githubid != member.ID {
-		respondErr(w, r, http.StatusBadRequest, "", err)
-		return
-	}
 	db := s.client.Database("winc")
 	collection := db.Collection("members")
 	if member.Name != "" {
-		_, err = collection.UpdateOne(context.TODO(), bson.D{{Key: "id", Value: member.ID}}, bson.D{{Key: "name", Value: member.Name}})
+		_, err = collection.UpdateOne(context.TODO(), bson.D{{Key: "id", Value: githubid}}, bson.D{{"$set", bson.D{{Key: "name", Value: member.Name}}}})
 		if err != nil {
 			respondErr(w, r, http.StatusInternalServerError)
 			return
 		}
 	}
 	if member.Zenn != "" {
-		_, err = collection.UpdateOne(context.TODO(), bson.D{{Key: "id", Value: member.ID}}, bson.D{{Key: "zenn", Value: member.Zenn}})
+		_, err = collection.UpdateOne(context.TODO(), bson.D{{Key: "id", Value: githubid}}, bson.D{{"$set", bson.D{{Key: "zenn", Value: member.Zenn}}}})
 		if err != nil {
 			respondErr(w, r, http.StatusInternalServerError)
 			return
 		}
 	}
 	if member.Qiita != "" {
-		_, err = collection.UpdateOne(context.TODO(), bson.D{{Key: "id", Value: member.ID}}, bson.D{{Key: "qiita", Value: member.Qiita}})
+		_, err = collection.UpdateOne(context.TODO(), bson.D{{Key: "id", Value: githubid}}, bson.D{{"$set", bson.D{{Key: "qiita", Value: member.Qiita}}}})
 		if err != nil {
 			respondErr(w, r, http.StatusInternalServerError)
 			return
