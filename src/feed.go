@@ -68,7 +68,7 @@ func (s *Server) ZennFeedCollector(id string) {
 
 func (s *Server) QiitaFeedCollector(id string) {
 	fp := gofeed.NewParser()
-	feed, _ := fp.ParseURL("https://qiita/" + id + "/feed?all=1")
+	feed, _ := fp.ParseURL("https://qiita.com/" + id + "/feed?all=1")
 	log.Println(feed)
 	ctx := context.TODO()
 	db := s.client.Database("winc")
