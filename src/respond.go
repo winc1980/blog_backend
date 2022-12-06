@@ -1,14 +1,19 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
 func decodeBody(r *http.Request, v interface{}) error {
-	defer r.Body.Close()
-	return json.NewDecoder(r.Body).Decode(v)
+	bodyBytes, _ := io.ReadAll(r.Body)
+	reader := bytes.NewReader(bodyBytes)
+	r.Body.Close() //  must close
+	r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	return json.NewDecoder(reader).Decode(v)
 }
 
 func encodeBody(w http.ResponseWriter, r *http.Request, v interface{}) error {

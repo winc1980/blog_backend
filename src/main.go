@@ -76,6 +76,10 @@ func withCORS(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+type Token struct {
+	Token string `json:"token"`
+}
+
 type GithubUser struct {
 	Login string `json:"login"`
 	ID    int    `json:"id"`
@@ -93,9 +97,9 @@ var (
 
 func NeedToken(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var oauthtoken Token
-		decodeBody(r, &oauthtoken)
-		token := &oauth2.Token{AccessToken: oauthtoken.Token}
+		var OAuthToken Token
+		decodeBody(r, &OAuthToken)
+		token := &oauth2.Token{AccessToken: OAuthToken.Token}
 		client := oauthConfig.Client(context.Background(), token)
 		resp, err := client.Get("https://api.github.com/user")
 		if err != nil {
@@ -119,9 +123,9 @@ func NeedToken(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 func (s *Server) GetCurrentUser(w http.ResponseWriter, r *http.Request) (string, error) {
-	var oauthtoken Token
-	decodeBody(r, &oauthtoken)
-	token := &oauth2.Token{AccessToken: oauthtoken.Token}
+	var OAuthToken Token
+	decodeBody(r, &OAuthToken)
+	token := &oauth2.Token{AccessToken: OAuthToken.Token}
 	client := oauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://api.github.com/user")
 	if err != nil {
