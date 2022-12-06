@@ -63,9 +63,9 @@ func withCORS(fn http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
 		switch r.Method {
 		case "OPTIONS":
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 			return
 		}
 		fn(w, r)
