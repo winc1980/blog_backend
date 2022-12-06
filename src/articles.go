@@ -10,16 +10,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type Article struct {
+type ArticleLink struct {
+	ID        string `json:"id"`
 	Name      string `json:"name"`
 	Link      string `json:"link"`
 	Title     string
 	Published time.Time
 }
 
-type Articles struct {
-	ID   string    `json:"id"`
-	List []Article `json:"list"`
+type ArticleLinks struct {
+	ID   string        `json:"id"`
+	List []ArticleLink `json:"list"`
 }
 
 func (s *Server) HandleArticles(w http.ResponseWriter, r *http.Request) {
@@ -48,21 +49,25 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		return
 	}
+	if results == nil {
+		respond(w, r, http.StatusOK, []ArticleLink{})
+		return
+	}
 
 	respond(w, r, http.StatusOK, results)
 }
 
-func (s *Server) findArticleByLink(link string) (Article, error) {
+func (s *Server) findArticleByLink(link string) (ArticleLink, error) {
 	db := s.client.Database("winc")
 	collection := db.Collection("articles")
 	var result bson.Raw
 	err := collection.FindOne(context.TODO(), bson.D{{Key: "link", Value: link}}).Decode(&result)
 	if err != nil {
-		return Article{}, err
+		return ArticleLink{}, err
 	}
 	var mapData map[string]interface{}
 	json.Unmarshal([]byte(result.String()), &mapData)
-	var article Article
+	var article ArticleLink
 	json.Unmarshal([]byte(result.String()), &article)
 	return article, nil
 }
