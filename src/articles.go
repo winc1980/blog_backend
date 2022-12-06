@@ -18,9 +18,9 @@ type ArticleLink struct {
 	Published time.Time
 }
 
-type ArticleLinks struct {
-	ID   string        `json:"id"`
-	List []ArticleLink `json:"list"`
+type Items struct {
+	Links    []ArticleLink
+	Articles []Article
 }
 
 func (s *Server) HandleArticles(w http.ResponseWriter, r *http.Request) {

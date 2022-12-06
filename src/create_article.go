@@ -7,6 +7,7 @@ import (
 )
 
 type Article struct {
+	UUID      string
 	ID        string `json:"id"`
 	Title     string `json:"title"`
 	Published time.Time
@@ -15,6 +16,7 @@ type Article struct {
 func (s *Server) HandleCreateArticle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
+		s.HandleCreateArticlePost(w, r)
 		return
 	}
 }

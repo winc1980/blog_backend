@@ -39,7 +39,7 @@ func (s *Server) FeedCollector() {
 		var member Member
 		json.Unmarshal([]byte(doc.String()), &member)
 		if member.Zenn != "" {
-			s.ZennFeedCollector(member.Zenn)
+			s.ZennLinkCollector(member.Zenn)
 		}
 		if member.Qiita != "" {
 			s.QiitaLinkCollector(member.Qiita, member.ID)
@@ -50,7 +50,7 @@ func (s *Server) FeedCollector() {
 	}
 }
 
-func (s *Server) ZennFeedCollector(id string) {
+func (s *Server) ZennLinkCollector(id string) {
 	fp := gofeed.NewParser()
 	feed, _ := fp.ParseURL("https://zenn.dev/" + id + "/feed?all=1")
 	log.Println(feed)

@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/oauth2"
 )
 
@@ -60,6 +61,17 @@ func (s *Server) HandleSetTokenPost(w http.ResponseWriter, r *http.Request) {
 	}
 	if count == 0 {
 		respondErr(w, r, http.StatusBadRequest, "")
+		return
+	}
+	memberCollection := db.Collection("members")
+	_, err = s.findMemberByID(user.Login)
+	if err != mongo.ErrNoDocuments && err != nil {
+		respondErr(w, r, http.StatusBadRequest, "member already exists")
+		return
+	}
+	_, err = memberCollection.InsertOne(context.TODO(), bson.D{{Key: "id", Value: user.Login}})
+	if err != nil {
+		respondErr(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
