@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/oauth2"
 )
@@ -66,11 +66,12 @@ func (s *Server) HandleMembersPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	memberCollection := db.Collection("members")
-	_, err = s.findMemberByID(user.Login)
-	if err != mongo.ErrNoDocuments {
+	isExist, err := s.checkMemberExists(user.Login)
+	if isExist {
 		respondErr(w, r, http.StatusBadRequest, "member already exists")
 		return
-	} else if err != nil {
+	}
+	if err != nil {
 		respondErr(w, r, http.StatusInternalServerError)
 		return
 	}
@@ -150,4 +151,15 @@ func (s *Server) findMemberByID(id string) (Member, error) {
 	var member Member
 	json.Unmarshal([]byte(result.String()), &member)
 	return member, nil
+}
+
+func (s *Server) checkMemberExists(id string) (bool, error) {
+	db := s.client.Database("winc")
+	collection := db.Collection("users")
+	count, err := collection.CountDocuments(context.TODO(), bson.D{{Key: "id", Value: id}})
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	return count != 0, nil
 }
