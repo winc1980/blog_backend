@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -15,6 +16,7 @@ type ArticleLink struct {
 	Name      string `json:"name"`
 	Link      string `json:"link"`
 	Title     string
+	Image     string
 	Published time.Time
 }
 
@@ -70,4 +72,15 @@ func (s *Server) findArticleByLink(link string) (ArticleLink, error) {
 	var article ArticleLink
 	json.Unmarshal([]byte(result.String()), &article)
 	return article, nil
+}
+
+func (s *Server) checkArticleExists(link string) (bool, error) {
+	db := s.client.Database("winc")
+	collection := db.Collection("articles")
+	count, err := collection.CountDocuments(context.TODO(), bson.D{{Key: "link", Value: link}})
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	return count != 0, nil
 }

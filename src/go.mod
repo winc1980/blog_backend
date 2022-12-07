@@ -3,6 +3,7 @@ module winc
 go 1.19
 
 require (
+	github.com/dyatlov/go-opengraph/opengraph v0.0.0-20220524092352-606d7b1e5f8a
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/joho/godotenv v1.4.0
 	github.com/mmcdole/gofeed v1.1.3

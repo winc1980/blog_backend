@@ -7,8 +7,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/dyatlov/go-opengraph/opengraph"
 	"github.com/mmcdole/gofeed"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,6 +20,7 @@ type Qiita struct {
 	Title      string    `json:"title"`
 	Created_at time.Time `json:"created_at"`
 	Link       string    `json:"url"`
+	Image      string
 }
 
 func (s *Server) FeedCollector() {
@@ -59,9 +62,11 @@ func (s *Server) ZennLinkCollector(id string) {
 	collection := db.Collection("articles")
 
 	for _, item := range feed.Items {
-		_, err := s.findArticleByLink(item.Link)
-		if err != mongo.ErrNoDocuments && err != nil {
+		isExist, err := s.checkArticleExists(item.Link)
+		if err != nil && err != mongo.ErrNoDocuments {
 			return
+		} else if isExist {
+			continue
 		}
 		_, err = collection.InsertOne(ctx, bson.D{
 			{Key: "type", Value: "zenn"},
@@ -69,6 +74,7 @@ func (s *Server) ZennLinkCollector(id string) {
 			{Key: "name", Value: item.Authors[0].Name},
 			{Key: "link", Value: item.Link},
 			{Key: "title", Value: item.Title},
+			{Key: "image", Value: item.Image.URL},
 			{Key: "published", Value: *item.PublishedParsed},
 		})
 		if err != nil {
@@ -111,21 +117,58 @@ func (s *Server) QiitaLinkCollector(qiitaID string, githubID string) {
 	db := s.client.Database("winc")
 	collection := db.Collection("articles")
 	for _, item := range response {
-		_, err := s.findArticleByLink(item.Link)
-		if err == mongo.ErrNoDocuments {
-			_, err = collection.InsertOne(ctx, bson.D{
-				{Key: "type", Value: "qiita"},
-				{Key: "githubid", Value: githubID},
-				{Key: "name", Value: qiitaID},
-				{Key: "link", Value: item.Link},
-				{Key: "title", Value: item.Title},
-				{Key: "published", Value: item.Created_at},
-			})
-			if err != nil {
-				return
-			}
-		} else if err != nil {
+		isExist, err := s.checkArticleExists(item.Link)
+		if err != nil && err != mongo.ErrNoDocuments {
+			return
+		} else if isExist {
+			continue
+		}
+		imageurl, _ := getOGImage(item.Link)
+		_, err = collection.InsertOne(ctx, bson.D{
+			{Key: "type", Value: "qiita"},
+			{Key: "githubid", Value: githubID},
+			{Key: "name", Value: qiitaID},
+			{Key: "link", Value: item.Link},
+			{Key: "title", Value: item.Title},
+			{Key: "image", Value: imageurl},
+			{Key: "published", Value: item.Created_at},
+		})
+		if err != nil {
 			return
 		}
 	}
+}
+
+func getOGImage(link string) (string, error) {
+	req, err := http.NewRequest(
+		"GET",
+		link,
+		nil,
+	)
+	if err != nil {
+		return "", err
+	}
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	html := string(body)
+	og := opengraph.NewOpenGraph()
+	err = og.ProcessHTML(strings.NewReader(html))
+
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	return og.Images[0].URL, nil
 }

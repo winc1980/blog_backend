@@ -68,7 +68,7 @@ func (s *Server) HandleMembersPost(w http.ResponseWriter, r *http.Request) {
 	memberCollection := db.Collection("members")
 	isExist, err := s.checkMemberExists(user.Login)
 	if isExist {
-		respondErr(w, r, http.StatusBadRequest, "member already exists")
+		respond(w, r, http.StatusOK, "member already exists")
 		return
 	}
 	if err != nil {
