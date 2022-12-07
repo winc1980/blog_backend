@@ -43,19 +43,25 @@ func (s *Server) HandleArticles(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("page")
-	page, err := strconv.ParseInt(query, 10, 64)
-	page -= 1
 	db := s.client.Database("winc")
 	collection := db.Collection("articles")
 	var limit int64 = 18
 	var opts *options.FindOptions
+	var filter bson.D = bson.D{}
+	query := r.URL.Query()
+	pageQuery := query.Get("page")
+	page, err := strconv.ParseInt(pageQuery, 10, 64)
+	page -= 1
 	if err != nil {
 		opts = options.Find().SetSort(bson.D{{Key: "published", Value: -1}}).SetLimit(limit)
 	} else {
 		opts = options.Find().SetSort(bson.D{{Key: "published", Value: -1}}).SetLimit(limit).SetSkip(limit * page)
 	}
-	cursor, err := collection.Find(context.TODO(), bson.M{}, opts)
+	typeQuery := query.Get("type")
+	if typeQuery != "" {
+		filter = bson.D{{Key: "type", Value: typeQuery}}
+	}
+	cursor, err := collection.Find(context.TODO(), filter, opts)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -70,8 +76,7 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filter := bson.D{}
-	count, err := collection.CountDocuments(context.TODO(), filter)
+	count, err := collection.CountDocuments(context.TODO(), bson.D{})
 	if err != nil {
 		panic(err)
 	}
