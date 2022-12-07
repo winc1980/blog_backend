@@ -24,8 +24,8 @@ type ArticleLink struct {
 }
 
 type ArticlesResponse struct {
-	items       []primitive.M
-	pages_count int
+	Items       []primitive.M
+	Pages_count int64
 }
 
 type Items struct {
@@ -75,8 +75,7 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err)
 		}
-
-		respond(w, r, http.StatusOK, ArticlesResponse{items: results, pages_count: int(count) / int(limit)})
+		respond(w, r, http.StatusOK, ArticlesResponse{Items: results, Pages_count: count / limit})
 	} else {
 		db := s.client.Database("winc")
 		collection := db.Collection("articles")
@@ -105,8 +104,7 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err)
 		}
-
-		respond(w, r, http.StatusOK, ArticlesResponse{items: results, pages_count: int(count) / int(limit)})
+		respond(w, r, http.StatusOK, ArticlesResponse{Items: results, Pages_count: count / limit})
 	}
 }
 
