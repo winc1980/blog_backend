@@ -9,6 +9,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type ArticleLink struct {
@@ -37,7 +38,8 @@ func (s *Server) HandleArticles(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 	db := s.client.Database("winc")
 	collection := db.Collection("articles")
-	cursor, err := collection.Find(context.TODO(), bson.M{})
+	opts := options.Find().SetSort(bson.D{{Key: "published", Value: 1}})
+	cursor, err := collection.Find(context.TODO(), bson.M{}, opts)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
