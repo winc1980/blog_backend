@@ -42,7 +42,7 @@ func (s *Server) FeedCollector() {
 		var member Member
 		json.Unmarshal([]byte(doc.String()), &member)
 		if member.Zenn != "" {
-			s.ZennLinkCollector(member.Zenn)
+			s.ZennLinkCollector(member.Zenn, member.GithubID)
 		}
 		if member.Qiita != "" {
 			s.QiitaLinkCollector(member.Qiita, member.GithubID)
@@ -53,9 +53,9 @@ func (s *Server) FeedCollector() {
 	}
 }
 
-func (s *Server) ZennLinkCollector(id string) {
+func (s *Server) ZennLinkCollector(zennID string, githubid string) {
 	fp := gofeed.NewParser()
-	feed, _ := fp.ParseURL("https://zenn.dev/" + id + "/feed?all=1")
+	feed, _ := fp.ParseURL("https://zenn.dev/" + zennID + "/feed?all=1")
 	ctx := context.TODO()
 	db := s.client.Database("winc")
 	collection := db.Collection("articles")
@@ -70,12 +70,12 @@ func (s *Server) ZennLinkCollector(id string) {
 		imageurl, _ := getOGImage(item.Link)
 		_, err = collection.InsertOne(ctx, bson.D{
 			{Key: "type", Value: "zenn"},
-			{Key: "githubid", Value: id},
+			{Key: "githubid", Value: githubid},
 			{Key: "name", Value: item.Authors[0].Name},
 			{Key: "link", Value: item.Link},
 			{Key: "title", Value: item.Title},
 			{Key: "image", Value: imageurl},
-			{Key: "published", Value: *item.PublishedParsed},
+			{Key: "published", Value: item.PublishedParsed.Format("2006-01-02")},
 		})
 		if err != nil {
 			return
@@ -131,7 +131,7 @@ func (s *Server) QiitaLinkCollector(qiitaID string, githubID string) {
 			{Key: "link", Value: item.Link},
 			{Key: "title", Value: item.Title},
 			{Key: "image", Value: imageurl},
-			{Key: "published", Value: item.Created_at},
+			{Key: "published", Value: item.Created_at.Format("2006-01-02")},
 		})
 		if err != nil {
 			return
