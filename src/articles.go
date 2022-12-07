@@ -28,11 +28,6 @@ type ArticlesResponse struct {
 	Pages_count int64
 }
 
-type Items struct {
-	Links    []ArticleLink
-	Articles []Article
-}
-
 func (s *Server) HandleArticles(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
