@@ -68,13 +68,14 @@ func (s *Server) ZennLinkCollector(id string) {
 		} else if isExist {
 			continue
 		}
+		imageurl, _ := getOGImage(item.Link)
 		_, err = collection.InsertOne(ctx, bson.D{
 			{Key: "type", Value: "zenn"},
 			{Key: "githubid", Value: id},
 			{Key: "name", Value: item.Authors[0].Name},
 			{Key: "link", Value: item.Link},
 			{Key: "title", Value: item.Title},
-			{Key: "image", Value: item.Image.URL},
+			{Key: "image", Value: imageurl},
 			{Key: "published", Value: *item.PublishedParsed},
 		})
 		if err != nil {
