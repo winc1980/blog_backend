@@ -140,7 +140,7 @@ func (s *Server) HandleMembersPut(w http.ResponseWriter, r *http.Request) {
 func (s *Server) findMemberByID(id string) (Member, error) {
 	ctx := context.TODO()
 	db := s.client.Database("winc")
-	collection := db.Collection("users")
+	collection := db.Collection("members")
 	var result bson.Raw
 	err := collection.FindOne(ctx, bson.D{{Key: "githubid", Value: id}}, options.FindOne()).Decode(&result)
 	if err != nil {
@@ -155,7 +155,7 @@ func (s *Server) findMemberByID(id string) (Member, error) {
 
 func (s *Server) checkMemberExists(id string) (bool, error) {
 	db := s.client.Database("winc")
-	collection := db.Collection("users")
+	collection := db.Collection("members")
 	count, err := collection.CountDocuments(context.TODO(), bson.D{{Key: "githubid", Value: id}})
 	if err != nil {
 		log.Println(err)
