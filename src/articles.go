@@ -75,6 +75,9 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+	if results == nil {
+		results = []bson.M{}
+	}
 	respond(w, r, http.StatusOK, ArticlesResponse{Items: results, Pages_count: (count / limit) + 1})
 }
 
