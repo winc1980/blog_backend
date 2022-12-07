@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 
@@ -77,7 +76,6 @@ func (s *Server) GetCurrentUser(w http.ResponseWriter, r *http.Request) (string,
 	}
 	var user GithubUser
 	err = json.Unmarshal(body, &user)
-	log.Println("user:", user)
 	if err != nil {
 		respondErr(w, r, http.StatusInternalServerError)
 		return "", err

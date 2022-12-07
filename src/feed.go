@@ -56,7 +56,6 @@ func (s *Server) FeedCollector() {
 func (s *Server) ZennLinkCollector(id string) {
 	fp := gofeed.NewParser()
 	feed, _ := fp.ParseURL("https://zenn.dev/" + id + "/feed?all=1")
-	log.Println(feed)
 	ctx := context.TODO()
 	db := s.client.Database("winc")
 	collection := db.Collection("articles")
