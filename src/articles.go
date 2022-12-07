@@ -76,7 +76,7 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	count, err := collection.CountDocuments(context.TODO(), bson.D{})
+	count, err := collection.CountDocuments(context.TODO(), filter)
 	if err != nil {
 		panic(err)
 	}
