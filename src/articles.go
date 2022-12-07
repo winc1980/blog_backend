@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -20,6 +21,11 @@ type ArticleLink struct {
 	Title     string
 	Image     string
 	Published time.Time
+}
+
+type ArticlesResponse struct {
+	items       []primitive.M
+	pages_count int
 }
 
 type Items struct {
@@ -42,7 +48,8 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		db := s.client.Database("winc")
 		collection := db.Collection("articles")
-		opts := options.Find().SetSort(bson.D{{Key: "published", Value: -1}}).SetLimit(18)
+		var limit int64 = 18
+		opts := options.Find().SetSort(bson.D{{Key: "published", Value: -1}}).SetLimit(limit)
 		cursor, err := collection.Find(context.TODO(), bson.M{}, opts)
 
 		if err != nil {
@@ -62,7 +69,13 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		respond(w, r, http.StatusOK, results)
+		filter := bson.D{}
+		count, err := collection.CountDocuments(context.TODO(), filter)
+		if err != nil {
+			panic(err)
+		}
+
+		respond(w, r, http.StatusOK, ArticlesResponse{items: results, pages_count: int(count) / int(limit)})
 	} else {
 		db := s.client.Database("winc")
 		collection := db.Collection("articles")
@@ -83,11 +96,16 @@ func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if results == nil {
-			respond(w, r, http.StatusOK, []ArticleLink{})
+			respond(w, r, http.StatusOK, ArticlesResponse{})
 			return
 		}
+		filter := bson.D{}
+		count, err := collection.CountDocuments(context.TODO(), filter)
+		if err != nil {
+			panic(err)
+		}
 
-		respond(w, r, http.StatusOK, results)
+		respond(w, r, http.StatusOK, ArticlesResponse{items: results, pages_count: int(count) / int(limit)})
 	}
 }
 
