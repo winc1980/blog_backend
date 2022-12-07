@@ -42,7 +42,7 @@ func (s *Server) FeedCollector() {
 			s.ZennLinkCollector(member.Zenn)
 		}
 		if member.Qiita != "" {
-			s.QiitaLinkCollector(member.Qiita, member.ID)
+			s.QiitaLinkCollector(member.Qiita, member.GithubID)
 		}
 	}
 	if err := cursor.Err(); err != nil {
@@ -65,7 +65,7 @@ func (s *Server) ZennLinkCollector(id string) {
 		}
 		_, err = collection.InsertOne(ctx, bson.D{
 			{Key: "type", Value: "zenn"},
-			{Key: "id", Value: id},
+			{Key: "githubid", Value: id},
 			{Key: "name", Value: item.Authors[0].Name},
 			{Key: "link", Value: item.Link},
 			{Key: "title", Value: item.Title},
@@ -115,7 +115,7 @@ func (s *Server) QiitaLinkCollector(qiitaID string, githubID string) {
 		if err == mongo.ErrNoDocuments {
 			_, err = collection.InsertOne(ctx, bson.D{
 				{Key: "type", Value: "qiita"},
-				{Key: "id", Value: githubID},
+				{Key: "githubid", Value: githubID},
 				{Key: "name", Value: qiitaID},
 				{Key: "link", Value: item.Link},
 				{Key: "title", Value: item.Title},

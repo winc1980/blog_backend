@@ -14,10 +14,10 @@ import (
 )
 
 type Member struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Zenn  string `json:"zenn"`
-	Qiita string `json:"qiita"`
+	GithubID string `json:"id"`
+	Name     string `json:"name"`
+	Zenn     string `json:"zenn"`
+	Qiita    string `json:"qiita"`
 }
 
 func (s *Server) HandleMembers(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +75,7 @@ func (s *Server) HandleMembersPost(w http.ResponseWriter, r *http.Request) {
 		respondErr(w, r, http.StatusInternalServerError)
 		return
 	}
-	_, err = memberCollection.InsertOne(context.TODO(), bson.D{{Key: "id", Value: user.Login}})
+	_, err = memberCollection.InsertOne(context.TODO(), bson.D{{Key: "githubid", Value: user.Login}})
 	if err != nil {
 		respondErr(w, r, http.StatusInternalServerError, err)
 		return
@@ -97,7 +97,7 @@ func (s *Server) HandleMembersPut(w http.ResponseWriter, r *http.Request) {
 	}
 	db := s.client.Database("winc")
 	collection := db.Collection("members")
-	filter := bson.D{{Key: "id", Value: githubid}}
+	filter := bson.D{{Key: "githubid", Value: githubid}}
 	if member.Name != "" {
 		update := bson.D{{"$set", bson.D{{Key: "name", Value: member.Name}}}}
 		_, err = collection.UpdateOne(
@@ -142,7 +142,7 @@ func (s *Server) findMemberByID(id string) (Member, error) {
 	db := s.client.Database("winc")
 	collection := db.Collection("users")
 	var result bson.Raw
-	err := collection.FindOne(ctx, bson.D{{Key: "id", Value: id}}, options.FindOne()).Decode(&result)
+	err := collection.FindOne(ctx, bson.D{{Key: "githubid", Value: id}}, options.FindOne()).Decode(&result)
 	if err != nil {
 		return Member{}, err
 	}
@@ -156,7 +156,7 @@ func (s *Server) findMemberByID(id string) (Member, error) {
 func (s *Server) checkMemberExists(id string) (bool, error) {
 	db := s.client.Database("winc")
 	collection := db.Collection("users")
-	count, err := collection.CountDocuments(context.TODO(), bson.D{{Key: "id", Value: id}})
+	count, err := collection.CountDocuments(context.TODO(), bson.D{{Key: "githubid", Value: id}})
 	if err != nil {
 		log.Println(err)
 		return false, err
