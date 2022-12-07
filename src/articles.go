@@ -45,6 +45,7 @@ func (s *Server) HandleArticles(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("page")
 	page, err := strconv.ParseInt(query, 10, 64)
+	page -= 1
 	if err != nil {
 		db := s.client.Database("winc")
 		collection := db.Collection("articles")
