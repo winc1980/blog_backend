@@ -14,7 +14,7 @@ import (
 )
 
 type Member struct {
-	GithubID string `json:"id"`
+	GithubID string `json:"githubid"`
 	Name     string `json:"name"`
 	Zenn     string `json:"zenn"`
 	Qiita    string `json:"qiita"`
