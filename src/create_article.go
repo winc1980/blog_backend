@@ -51,7 +51,7 @@ func (s *Server) HandleCreateArticlePost(w http.ResponseWriter, r *http.Request)
 	article.Type = "winc"
 
 	db := s.client.Database("winc")
-	collection := db.Collection("articles_original")
+	collection := db.Collection("articles")
 	_, err = collection.InsertOne(context.TODO(), article)
 	if err != nil {
 		respondErr(w, r, http.StatusInternalServerError, err)
