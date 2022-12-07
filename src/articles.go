@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -36,29 +37,58 @@ func (s *Server) HandleArticles(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleArticlesGet(w http.ResponseWriter, r *http.Request) {
-	db := s.client.Database("winc")
-	collection := db.Collection("articles")
-	opts := options.Find().SetSort(bson.D{{Key: "published", Value: 1}})
-	cursor, err := collection.Find(context.TODO(), bson.M{}, opts)
-
+	query := r.URL.Query().Get("page")
+	page, err := strconv.ParseInt(query, 10, 64)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			respondErr(w, r, http.StatusInternalServerError, "mongo: no result")
+		db := s.client.Database("winc")
+		collection := db.Collection("articles")
+		opts := options.Find().SetSort(bson.D{{Key: "published", Value: -1}}).SetLimit(18)
+		cursor, err := collection.Find(context.TODO(), bson.M{}, opts)
+
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				respondErr(w, r, http.StatusInternalServerError, "mongo: no result")
+				return
+			}
+			respondErr(w, r, http.StatusInternalServerError)
 			return
 		}
-		respondErr(w, r, http.StatusInternalServerError)
-		return
-	}
-	var results []bson.M
-	if err = cursor.All(context.TODO(), &results); err != nil {
-		return
-	}
-	if results == nil {
-		respond(w, r, http.StatusOK, []ArticleLink{})
-		return
-	}
+		var results []bson.M
+		if err = cursor.All(context.TODO(), &results); err != nil {
+			return
+		}
+		if results == nil {
+			respond(w, r, http.StatusOK, []ArticleLink{})
+			return
+		}
 
-	respond(w, r, http.StatusOK, results)
+		respond(w, r, http.StatusOK, results)
+	} else {
+		db := s.client.Database("winc")
+		collection := db.Collection("articles")
+		var limit int64 = 18
+		opts := options.Find().SetSort(bson.D{{Key: "published", Value: -1}}).SetLimit(18).SetSkip(limit * page)
+		cursor, err := collection.Find(context.TODO(), bson.M{}, opts)
+
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				respondErr(w, r, http.StatusInternalServerError, "mongo: no result")
+				return
+			}
+			respondErr(w, r, http.StatusInternalServerError)
+			return
+		}
+		var results []bson.M
+		if err = cursor.All(context.TODO(), &results); err != nil {
+			return
+		}
+		if results == nil {
+			respond(w, r, http.StatusOK, []ArticleLink{})
+			return
+		}
+
+		respond(w, r, http.StatusOK, results)
+	}
 }
 
 func (s *Server) findArticleByLink(link string) (ArticleLink, error) {
